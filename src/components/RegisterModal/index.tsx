@@ -1,43 +1,70 @@
-import { StyleSheet, View, Platform, Text, ScrollView } from 'react-native';
-import React, { Dispatch, SetStateAction } from 'react';
+import { StyleSheet, View, Platform, Text, ScrollView, Image, Alert } from 'react-native';
+import React, { Dispatch, SetStateAction, useRef, useState } from 'react';
 import Modal from 'react-native-modal';
+import BouncyCheckbox from 'react-native-bouncy-checkbox';
+
 import THEME from '../../theme';
+
 import { Input } from '../Input';
 import { Spacer } from '../Spacer';
+import { ImagePlaceHolder } from '../ImagePlaceHolder';
+import { ImagePickerButton } from '../ImagePickerButton';
+
 import {
+  INPUTTEXT_PROJECT_DEFAULT,
   InputTextProjectProps,
+  PROJECT_ERROR_MESSAGES_DEFAULT,
   PROJECT_TYPES_DEFAULT,
+  ProjectErrorMessagesProps,
   ProjectTypeProps,
   TECHNOLOGIES_DEFAULT,
   TechnologiesProps,
 } from '../../dto/projectsDTO';
-import BouncyCheckbox from 'react-native-bouncy-checkbox';
+import { PROJECT_IMAGE_DEFAULT, ProjectImageProps } from '../../dto/imageDTO';
 import {
   TechnologyTypes,
   getTechnologyColumns,
 } from '../../utils/getTechnologyColumns';
+import { SubmitButton } from '../SubmitButton';
+import { TextInput } from 'react-native-gesture-handler';
+
 
 type RegisterModalProps = {
   isVisible: boolean;
   onClose: () => void;
+  project: InputTextProjectProps;
   projectType: ProjectTypeProps;
-  setProject: Dispatch<SetStateAction<InputTextProjectProps>>;
+  projectImage: ProjectImageProps;
+  projectTechnologies: TechnologiesProps[];
   setProjectType: Dispatch<SetStateAction<ProjectTypeProps>>;
+  setProject: Dispatch<SetStateAction<InputTextProjectProps>>;
+  setProjectImage: (images: ProjectImageProps) => void;
   setProjectTechnologies: Dispatch<SetStateAction<TechnologiesProps[]>>;
 };
 
-const technologies = getTechnologyColumns(TECHNOLOGIES_DEFAULT);
-const projectTypes = getTechnologyColumns(PROJECT_TYPES_DEFAULT);
+const technologiesColumns = getTechnologyColumns(TECHNOLOGIES_DEFAULT);
+const projectTypesColumns = getTechnologyColumns(PROJECT_TYPES_DEFAULT);
 
 export function RegisterModal({
   onClose,
   isVisible,
   setProject,
+  project,
   projectType,
+  projectTechnologies,
+  projectImage,
   setProjectType,
+  setProjectImage,
   setProjectTechnologies,
 }: RegisterModalProps) {
   const submitInputButton = Platform.OS === 'ios' ? 'done' : 'send';
+
+  const projectNameInputRef = useRef<TextInput>(null);
+  const projectDescriptionInputRef = useRef<TextInput>(null);
+  const projectRemoteRepositoryInputRef = useRef<TextInput>(null);
+  const projectPublishLinkInputRef = useRef<TextInput>(null);
+
+  const [projectErrorsMessages, setProjectErrorsMessages] = useState<ProjectErrorMessagesProps>(PROJECT_ERROR_MESSAGES_DEFAULT);
 
   function handleUpdateName(name: string) {
     setProject(prevProject => ({ ...prevProject, name }));
@@ -54,6 +81,10 @@ export function RegisterModal({
 
   function handleSelectProjectType(type: ProjectTypeProps) {
     setProjectType(type);
+  }
+  function handleOnClose() {
+    setProjectErrorsMessages(PROJECT_ERROR_MESSAGES_DEFAULT);
+    onClose();
   }
 
   function handleAddTechnology(technology: TechnologiesProps) {
@@ -114,75 +145,201 @@ export function RegisterModal({
   };
 
   const ProjectTypeLeftColumnCheckbox =
-    projectTypes.columns[1].map(renderCheckbox);
+    projectTypesColumns.columns[1].map(renderCheckbox);
   const ProjectTypeRightColumnCheckbox =
-    projectTypes.columns[0].map(renderCheckbox);
+    projectTypesColumns.columns[0].map(renderCheckbox);
   const TechnologyLeftColumnCheckbox =
-    technologies.columns[1].map(renderCheckbox);
+    technologiesColumns.columns[1].map(renderCheckbox);
   const TechnologyRightColumnCheckbox =
-    technologies.columns[0].map(renderCheckbox);
+    technologiesColumns.columns[0].map(renderCheckbox);
+
+
+  function handleSubmit() {
+    let error = 0
+    if (project.name === '') {
+      setProjectErrorsMessages(prevProjectErrorsMessages => ({ ...prevProjectErrorsMessages, name: 'É necessário informar um nome para o projeto.' }));
+      error++;
+    }
+    if (project.description === '') {
+      setProjectErrorsMessages(prevProjectErrorsMessages => ({ ...prevProjectErrorsMessages, description: 'É necessário informar uma descrição para o projeto.' }));
+      error++;
+    }
+    if (project.remoteRepository === '') {
+      setProjectErrorsMessages(prevProjectErrorsMessages => ({ ...prevProjectErrorsMessages, remoteRepository: 'É necessário informar um repositório remoto para o projeto.' }));
+      error++;
+    }
+    if (projectTechnologies.length === 0) {
+      setProjectErrorsMessages(prevProjectErrorsMessages => ({ ...prevProjectErrorsMessages, technologies: 'É necessário informar pelo menos uma tecnologia para o projeto.' }));
+      error++;
+    }
+    if (projectType === 'other') {
+      setProjectErrorsMessages(prevProjectErrorsMessages => ({ ...prevProjectErrorsMessages, type: 'É necessário informar qual é o tipo para o projeto.' }));
+      error++;
+    }
+
+    if (error > 0) {
+      console.log('Erro ao cadastrar projeto');
+      Alert.alert('Ops!', 'Preencha todos os campos obrigatórios');
+      return;
+    }
+
+    console.log("========= Dados do projeto =========");
+    console.log("Nome: ", project.name);
+    console.log("Descrição: ", project.description);
+    console.log("Repositório remoto: ", project.remoteRepository);
+    console.log("Link de publicação: ", project.publishLink);
+    console.log("Tecnologias: ", projectTechnologies);
+    console.log("Tipo do projeto: ", projectType);
+    console.log("Imagem: ", projectImage);
+    console.log("====================================");
+
+    setProject(INPUTTEXT_PROJECT_DEFAULT);
+    setProjectImage(PROJECT_IMAGE_DEFAULT);
+    setProjectType('other');
+    setProjectTechnologies([]);
+    error = 0;
+    handleOnClose();
+  }
+
 
   return (
     <Modal
       isVisible={isVisible}
       animationIn="slideInUp"
       animationOut="slideOutDown"
-      onBackdropPress={onClose}
+      onBackdropPress={handleOnClose}
       swipeThreshold={200}
       propagateSwipe
-      onSwipeComplete={onClose}
+      onSwipeComplete={handleOnClose}
       swipeDirection={['down']}
       style={styles.modal}>
       <View style={styles.container}>
         <ScrollView style={styles.scrollView}>
           <View style={styles.form} onStartShouldSetResponder={() => true}>
+            <View >
+              <Text>Selecione um imagem para o projeto:</Text>
+              <View style={styles.imageInputContainer}>
+                <ImagePickerButton
+                  setProjectImage={setProjectImage}
+                />
+                {
+                  projectImage.uri ? (
+                    <Image
+                      style={styles.imageProject}
+                      accessibilityLabel='Imagem do documento selecionada'
+                      source={{ uri: projectImage.uri }}
+                    />) : (
+                    <ImagePlaceHolder />
+                  )
+                }
+
+              </View>
+            </View>
+            <Spacer vertical={24} />
             <Input
-              label="Nome do projeto:"
+              value={project.name}
+              inputRef={projectNameInputRef}
+              label="Nome do projeto"
               autoCorrect
               autoCapitalize="words"
               placeholder="Discord 2"
               onChangeText={handleUpdateName}
               returnKeyType={submitInputButton}
+              errorMessage={projectErrorsMessages.name}
+              onSubmitEditing={() => {
+                projectNameInputRef.current?.blur();
+                projectDescriptionInputRef.current?.focus();
+              }}
             />
             <Spacer vertical={24} />
             <Input
-              label="Descrição do projeto:"
+              value={project.description}
+              multiline
+              height={100}
+              numberOfLines={4}
+              maxLength={150}
+              style={styles.textArea}
+              inputRef={projectDescriptionInputRef}
+              label="Descrição do projeto"
               autoCorrect
               autoCapitalize="sentences"
               placeholder="Aplicação para criar..."
               onChangeText={handleUpdateDescription}
               returnKeyType={submitInputButton}
+              errorMessage={projectErrorsMessages.description}
             />
             <Spacer vertical={24} />
             <Input
+              value={project.remoteRepository}
+              inputRef={projectRemoteRepositoryInputRef}
               label="Link do projeto em algum repositório remoto(Github, Gitlab...)"
               autoCorrect={false}
               placeholder="https://github.com/..."
               onChangeText={handleUpdateRemoteRepository}
               returnKeyType={submitInputButton}
+              errorMessage={projectErrorsMessages.remoteRepository}
+              onSubmitEditing={() => {
+                projectPublishLinkInputRef.current?.focus();
+              }}
             />
             <Spacer vertical={24} />
             <Input
+              value={project.publishLink}
+              isOptional
+              inputRef={projectPublishLinkInputRef}
               label="Link do projeto publicado(Vercel, Google Play Store...)"
               autoCorrect={false}
               placeholder=":https://play.google.com/..."
               onChangeText={handleUpdatePublishLink}
               returnKeyType={submitInputButton}
+              onSubmitEditing={() => {
+                projectPublishLinkInputRef.current?.blur();
+              }}
             />
             <Spacer vertical={24} />
-            <Text style={styles.title}>Qual é o tipo do projeto?</Text>
-            <Spacer vertical={12} />
-            <View style={styles.checkboxContainer}>
-              <View>{ProjectTypeLeftColumnCheckbox}</View>
-              <View>{ProjectTypeRightColumnCheckbox}</View>
+            <View>
+              <Text
+                style={styles.title}>Qual é o tipo do projeto?<Text style={styles.isRequired}>*</Text></Text>
+              <Spacer vertical={12} />
+              <View style={styles.checkboxContainer}>
+                <View>{ProjectTypeLeftColumnCheckbox}</View>
+                <View>{ProjectTypeRightColumnCheckbox}</View>
+              </View>
+              {
+                projectErrorsMessages.type !== '' && projectType === "other" && (
+                  <>
+                    <View style={styles.errorBorder} />
+                    <Text style={styles.errorMessage}>{projectErrorsMessages.type}</Text>
+                  </>
+                )
+              }
             </View>
             <Spacer vertical={24} />
-            <Text style={styles.title}>Quais tecnologias foram usadas?</Text>
-            <Spacer vertical={12} />
-            <View style={styles.checkboxContainer}>
-              <View>{TechnologyLeftColumnCheckbox}</View>
-              <View>{TechnologyRightColumnCheckbox}</View>
+            <View>
+              <Text style={styles.title}>Quais tecnologias foram usadas?<Text style={styles.isRequired}>*</Text></Text>
+              <Spacer vertical={12} />
+              <View style={styles.checkboxContainer}>
+                <View>{TechnologyLeftColumnCheckbox}</View>
+                <View>{TechnologyRightColumnCheckbox}</View>
+              </View>
+              {
+                projectErrorsMessages.technologies !== '' && projectTechnologies.length === 0 && (
+                  <>
+                    <View style={styles.errorBorder} />
+                    <Text style={styles.errorMessage}>{projectErrorsMessages.technologies}</Text>
+                  </>
+                )
+              }
             </View>
+
+            <Spacer vertical={12} />
+            <Text style={styles.textObrigatory}>Todos campos com o símbolo * são obrigatórios</Text>
+            <Spacer vertical={12} />
+            <SubmitButton
+              title='Salvar'
+              type='primary'
+              onPress={handleSubmit}
+            />
           </View>
         </ScrollView>
       </View>
@@ -210,6 +367,29 @@ const styles = StyleSheet.create({
   form: {
     padding: 32,
   },
+  imageInputContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  textArea: {
+    height: 100,
+    justifyContent: 'flex-start',
+  },
+  isRequired: {
+    color: THEME.COLORS.PRIMARY,
+    fontWeight: 'bold',
+  },
+  errorMessage: {
+    fontSize: 12,
+    color: THEME.COLORS.DELETE,
+  },
+  errorBorder: {
+    height: 0.5,
+    width: "100%",
+    margin: 8,
+    backgroundColor: THEME.COLORS.DELETE,
+  },
   checkboxContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -225,6 +405,16 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 16,
   },
+  imageProject: {
+    width: 90,
+    height: 90,
+    padding: 10,
+    borderRadius: 12,
+    backgroundColor: THEME.COLORS.PRIMARY_TRANSLUCENT,
+    borderWidth: 1,
+    borderColor: THEME.COLORS.PRIMARY,
+
+  },
   checkBoxborderColor: {
     borderColor: THEME.COLORS.PRIMARY,
   },
@@ -237,5 +427,10 @@ const styles = StyleSheet.create({
   checkBoxTitle: {
     fontSize: 14,
     textDecorationLine: 'none',
+  },
+  textObrigatory: {
+    color: THEME.COLORS.PRIMARY,
+    fontSize: 12,
+    textAlign: 'center',
   },
 });
