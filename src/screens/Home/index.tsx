@@ -30,6 +30,7 @@ import BouncyCheckbox from 'react-native-bouncy-checkbox';
 import { SubmitButton } from '../../components/SubmitButton';
 import { Spacer } from '../../components/Spacer';
 import { RegisterModal } from '../../components/RegisterModal';
+import { PROJECT_IMAGE_DEFAULT, ProjectImageProps } from '../../dto/imageDTO';
 
 const keyExtractor = (item: ProjectProps) => item.id;
 
@@ -41,6 +42,7 @@ export function Home() {
   const [project, setProject] = useState<InputTextProjectProps>(
     INPUTTEXT_PROJECT_DEFAULT,
   );
+  const [projectImage, setProjectImage] = useState<ProjectImageProps>(PROJECT_IMAGE_DEFAULT);
   const [projectType, setProjectType] = useState<ProjectTypeProps>("other");
   const [projectTechnologies, setProjectTechnologies] = useState<
     TechnologiesProps[]
@@ -197,10 +199,14 @@ export function Home() {
       />
 
       <RegisterModal
+        project={project}
         isVisible={isModalVisible}
         onClose={closeModal}
+        projectTechnologies={projectTechnologies}
         setProject={setProject}
         projectType={projectType}
+        projectImage={projectImage}
+        setProjectImage={setProjectImage}
         setProjectType={setProjectType}
         setProjectTechnologies={setProjectTechnologies}
       />
