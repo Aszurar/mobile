@@ -39,10 +39,26 @@ export type ProjectProps = {
   technologies: TechnologiesProps[];
 };
 
+export type ProjectErrorMessagesProps = {
+  name: string;
+  description: string;
+  remoteRepository: string;
+  technologies: string;
+  type: string;
+}
+
 export type InputTextProjectProps = Pick<
   ProjectProps,
   'name' | 'description' | 'remoteRepository' | 'publishLink'
 >;
+
+const PROJECT_ERROR_MESSAGES_DEFAULT = {
+  name: '',
+  description: '',
+  remoteRepository: '',
+  technologies: '',
+  type: '',  
+}
 
 const INPUTTEXT_PROJECT_DEFAULT = {
   name: '',
@@ -188,4 +204,5 @@ export {
   PROJECT_TYPES_DEFAULT,
   TECHNOLOGIES_DEFAULT,
   INPUTTEXT_PROJECT_DEFAULT,
+  PROJECT_ERROR_MESSAGES_DEFAULT,
 };
