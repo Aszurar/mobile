@@ -13,7 +13,6 @@ import {
 } from '../../dto/imageDTO';
 
 import { formatImageToState } from './utils';
-import { checkPermission, requestPermission } from '../../utils/permissions';
 import { IconNativeButton } from '../IconNativeButton';
 
 interface ImagePickerButtonProps {
