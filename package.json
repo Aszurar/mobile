@@ -2,12 +2,16 @@
   "name": "mobile",
   "version": "0.0.1",
   "private": true,
+  "reactNativePermissionsIOS": [
+    "PhotoLibrary"
+  ],
   "scripts": {
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "start": "react-native start",
     "test": "jest",
-    "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "postinstall": "react-native setup-ios-permissions && pod-install"
   },
   "dependencies": {
     "react": "18.1.0",
@@ -16,7 +20,9 @@
     "react-native-gesture-handler": "^2.9.0",
     "react-native-image-picker": "^5.3.1",
     "react-native-modal": "^13.0.1",
-    "react-native-svg": "^13.8.0"
+    "react-native-permissions": "^3.8.0",
+    "react-native-svg": "^13.8.0",
+    "pod-install": "0.1.38"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
