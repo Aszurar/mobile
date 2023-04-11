@@ -9,13 +9,18 @@ import THEME from '../../theme';
 type SubmitButtonProps = {
   onPress: () => void;
   title: string;
+  type?: "primary" | "secondary";
 };
 
-export function SubmitButton({ title, onPress }: SubmitButtonProps) {
+export function SubmitButton({ type = "secondary", title, onPress, }: SubmitButtonProps) {
+  const backgroundColor = type === "primary" ? THEME.COLORS.PRIMARY : THEME.COLORS.WHITE;
+  const textColor = type === "primary" ? THEME.COLORS.WHITE : THEME.COLORS.PRIMARY;
+  const backgroundColorStyle = { backgroundColor };
+  const textColorStyle = { color: textColor };
   return (
     <GestureHandlerRootView style={styles.container}>
-      <RectButton onPress={onPress} style={styles.button}>
-        <Text style={styles.title}>{title}</Text>
+      <RectButton onPress={onPress} style={[styles.button, backgroundColorStyle]}>
+        <Text style={[styles.title, textColorStyle]}>{title}</Text>
       </RectButton>
     </GestureHandlerRootView>
   );
@@ -31,12 +36,10 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: THEME.COLORS.WHITE,
     borderRadius: 12,
   },
   title: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: THEME.COLORS.PRIMARY,
   },
 });
