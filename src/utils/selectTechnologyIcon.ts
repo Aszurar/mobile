@@ -65,4 +65,4 @@ function selectTechnologyIcon(technologies: string) {
   }
 }
 
-export default selectTechnologyIcon;
+export { selectTechnologyIcon };

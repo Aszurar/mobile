@@ -21,7 +21,7 @@ import { ProjectProps } from '../../dto/projectsDTO';
 
 import THEME from '../../theme';
 
-import selectTechnologyIcon from '../../utils/selectTechnologyIcon';
+import { selectTechnologyIcon } from '../../utils/selectTechnologyIcon';
 import { selectProjectTypeIcon } from '../../utils/selectProjectTypeIcon';
 import handleLinkNavigation from '../../utils/handleLinkNavigation';
 
