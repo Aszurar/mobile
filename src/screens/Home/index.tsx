@@ -1,36 +1,36 @@
 import React, { useEffect, useState } from 'react';
+
+import BouncyCheckbox from 'react-native-bouncy-checkbox';
 import {
   Alert,
   FlatList,
   RefreshControl,
   StyleSheet,
   Text,
-  TextInput,
-  View,
   TouchableOpacity,
+  View,
 } from 'react-native';
-
-import { ListEmpty } from '../../components/ListEmpty';
-import { ProjectCard } from '../../components/ProjectCard';
-import { ItemSeparator } from '../../components/ItemSeparator';
 
 import TrashSVG from '../../assets/icons/trash.svg';
 
-import {
-  INPUTTEXT_PROJECT_DEFAULT,
-  InputTextProjectProps,
-  PROJECTS_DEFAULT,
-  ProjectProps,
-  ProjectTypeProps,
-  TechnologiesProps,
-} from '../../dto/projectsDTO';
-
-import THEME from '../../theme';
-import BouncyCheckbox from 'react-native-bouncy-checkbox';
 import { SubmitButton } from '../../components/SubmitButton';
 import { Spacer } from '../../components/Spacer';
 import { RegisterModal } from '../../components/RegisterModal';
+import { ProjectCard } from '../../components/ProjectCard';
+import { ListEmpty } from '../../components/ListEmpty';
+import { ItemSeparator } from '../../components/ItemSeparator';
+
+import {
+  INPUT_TEXT_PROJECT_DEFAULT,
+  InputTextProjectProps,
+  ProjectProps,
+  PROJECTS_DEFAULT,
+  ProjectTypeProps,
+  TechnologiesProps,
+} from '../../dto/projectsDTO';
 import { PROJECT_IMAGE_DEFAULT, ProjectImageProps } from '../../dto/imageDTO';
+
+import THEME from '../../theme';
 
 const keyExtractor = (item: ProjectProps) => item.id;
 
@@ -40,10 +40,12 @@ export function Home() {
   const [projectSelected, setProjectSelected] = useState<string[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [project, setProject] = useState<InputTextProjectProps>(
-    INPUTTEXT_PROJECT_DEFAULT,
+    INPUT_TEXT_PROJECT_DEFAULT,
   );
-  const [projectImage, setProjectImage] = useState<ProjectImageProps>(PROJECT_IMAGE_DEFAULT);
-  const [projectType, setProjectType] = useState<ProjectTypeProps>("other");
+  const [projectImage, setProjectImage] = useState<ProjectImageProps>(
+    PROJECT_IMAGE_DEFAULT,
+  );
+  const [projectType, setProjectType] = useState<ProjectTypeProps>('other');
   const [projectTechnologies, setProjectTechnologies] = useState<
     TechnologiesProps[]
   >([]);
@@ -103,16 +105,19 @@ export function Home() {
           {
             text: 'Sim',
             onPress: () => {
-              const filteredProjects = projects.filter(currentProject => !projectSelected.includes(currentProject.id));
+              const filteredProjects = projects.filter(
+                currentProject => !projectSelected.includes(currentProject.id),
+              );
               setProjects(filteredProjects);
               setProjectSelected([]);
-
             },
           },
         ],
       );
     } else {
-      const filteredProjects = projects.filter(currentProject => !projectSelected.includes(currentProject.id));
+      const filteredProjects = projects.filter(
+        currentProject => !projectSelected.includes(currentProject.id),
+      );
       setProjects(filteredProjects);
       setProjectSelected([]);
     }
@@ -135,7 +140,7 @@ export function Home() {
     console.log(projectType);
     console.log(projectTechnologies);
 
-    console.log("Todos projetos selecionados? ", isAllProjectSelected);
+    console.log('Todos projetos selecionados? ', isAllProjectSelected);
   }, [project, projectType, projectTechnologies, isAllProjectSelected]);
 
   return (
@@ -146,7 +151,9 @@ export function Home() {
       <Spacer vertical={12} />
 
       <View style={styles.listHeader}>
-        <Text style={styles.title}>{projectQuantity}</Text>
+        <Text style={styles.quantitaty}>
+          {projectSelectedQuantity}/{projectQuantity}
+        </Text>
 
         <View style={styles.deleteContainer}>
           {projectSelected.length > 0 && (
@@ -157,26 +164,26 @@ export function Home() {
             </TouchableOpacity>
           )}
 
-          {projectSelectedQuantity > 0 && (
-            <Text style={styles.subtitle}>{projectSelectedQuantity}</Text>
-          )}
           {projectQuantity > 0 && (
-            <BouncyCheckbox
-              size={24}
-              fillColor={THEME.COLORS.PRIMARY}
-              unfillColor={THEME.COLORS.WHITE}
-              iconStyle={styles.checkBoxborderColor}
-              text="Selecionar todos"
-              disableBuiltInState
-              isChecked={isAllProjectSelected}
-              textStyle={styles.subtitle}
-              innerIconStyle={[
-                styles.checkboxBorderWidth,
-                styles.checkBoxborderColor,
-              ]}
-              style={[styles.deleteContainerSpacer, styles.checkBoxStyle]}
-              onPress={handleToggleSelectAllProject}
-            />
+            <View style={styles.checkBoxContainer}>
+              <Text style={styles.subtitle}>Selecionar todos</Text>
+              <BouncyCheckbox
+                size={24}
+                fillColor={THEME.COLORS.PRIMARY}
+                unfillColor={THEME.COLORS.WHITE}
+                disableText
+                iconStyle={styles.checkBoxborderColor}
+                disableBuiltInState
+                isChecked={isAllProjectSelected}
+                textStyle={styles.subtitle}
+                innerIconStyle={[
+                  styles.checkboxBorderWidth,
+                  styles.checkBoxborderColor,
+                ]}
+                style={[styles.deleteContainerSpacer, styles.checkBoxStyle]}
+                onPress={handleToggleSelectAllProject}
+              />
+            </View>
           )}
         </View>
       </View>
@@ -227,6 +234,11 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: THEME.COLORS.WHITE,
   },
+  quantitaty: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: THEME.COLORS.WHITE,
+  },
   subtitle: {
     fontSize: 14,
     fontWeight: 'bold',
@@ -252,16 +264,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   deleteContainerSpacer: {
-    marginRight: 20,
+    marginRight: 24,
+  },
+  checkBoxContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   checkBoxborderColor: {
     borderColor: THEME.COLORS.WHITE,
+    borderRadius: 6,
   },
   checkboxBorderWidth: {
     borderWidth: 2,
   },
   checkBoxStyle: {
-    marginLeft: 24,
+    marginLeft: 12,
     marginRight: 0,
   },
   list: {
