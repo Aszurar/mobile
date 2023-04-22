@@ -1,17 +1,22 @@
-import { StyleSheet, View, Platform, Text, ScrollView, Image, Alert } from 'react-native';
 import React, { Dispatch, SetStateAction, useRef, useState } from 'react';
+
 import Modal from 'react-native-modal';
+import { TextInput } from 'react-native-gesture-handler';
 import BouncyCheckbox from 'react-native-bouncy-checkbox';
+import {
+  Alert,
+  Image,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 
-import THEME from '../../theme';
-
-import { Input } from '../Input';
-import { Spacer } from '../Spacer';
-import { ImagePlaceHolder } from '../ImagePlaceHolder';
-import { ImagePickerButton } from '../ImagePickerButton';
+import { ColumnsProps, getColumns } from '../../utils/getColumns';
 
 import {
-  INPUTTEXT_PROJECT_DEFAULT,
+  INPUT_TEXT_PROJECT_DEFAULT,
   InputTextProjectProps,
   PROJECT_ERROR_MESSAGES_DEFAULT,
   PROJECT_TYPES_DEFAULT,
@@ -21,13 +26,13 @@ import {
   TechnologiesProps,
 } from '../../dto/projectsDTO';
 import { PROJECT_IMAGE_DEFAULT, ProjectImageProps } from '../../dto/imageDTO';
-import {
-  TechnologyTypes,
-  getTechnologyColumns,
-} from '../../utils/getTechnologyColumns';
-import { SubmitButton } from '../SubmitButton';
-import { TextInput } from 'react-native-gesture-handler';
 
+import { SubmitButton } from '../SubmitButton';
+import { Spacer } from '../Spacer';
+import { Input } from '../Input';
+import { ImagePlaceHolder } from '../ImagePlaceHolder';
+import { ImagePickerButton } from '../ImagePickerButton';
+import THEME from '../../theme';
 
 type RegisterModalProps = {
   isVisible: boolean;
@@ -42,8 +47,8 @@ type RegisterModalProps = {
   setProjectTechnologies: Dispatch<SetStateAction<TechnologiesProps[]>>;
 };
 
-const technologiesColumns = getTechnologyColumns(TECHNOLOGIES_DEFAULT);
-const projectTypesColumns = getTechnologyColumns(PROJECT_TYPES_DEFAULT);
+const technologiesColumns = getColumns(TECHNOLOGIES_DEFAULT);
+const projectTypesColumns = getColumns(PROJECT_TYPES_DEFAULT);
 
 export function RegisterModal({
   onClose,
@@ -64,7 +69,8 @@ export function RegisterModal({
   const projectRemoteRepositoryInputRef = useRef<TextInput>(null);
   const projectPublishLinkInputRef = useRef<TextInput>(null);
 
-  const [projectErrorsMessages, setProjectErrorsMessages] = useState<ProjectErrorMessagesProps>(PROJECT_ERROR_MESSAGES_DEFAULT);
+  const [projectErrorsMessages, setProjectErrorsMessages] =
+    useState<ProjectErrorMessagesProps>(PROJECT_ERROR_MESSAGES_DEFAULT);
 
   function handleUpdateName(name: string) {
     setProject(prevProject => ({ ...prevProject, name }));
@@ -95,7 +101,7 @@ export function RegisterModal({
     );
   }
 
-  const renderCheckbox = (item: TechnologyTypes) => {
+  const renderCheckbox = (item: ColumnsProps) => {
     if (typeof item === 'string') {
       return (
         <React.Fragment key={item}>
@@ -103,12 +109,12 @@ export function RegisterModal({
             size={24}
             fillColor={THEME.COLORS.PRIMARY}
             unfillColor={THEME.COLORS.WHITE}
-            iconStyle={styles.checkBoxborderColor}
+            iconStyle={styles.checkBoxRoundSquareBorder}
             text={item}
             textStyle={styles.checkBoxTitle}
             innerIconStyle={[
               styles.checkboxBorderWidth,
-              styles.checkBoxborderColor,
+              styles.checkBoxRoundSquareBorder,
             ]}
             style={[styles.deleteContainerSpacer, styles.checkBoxStyle]}
             onPress={() => handleAddTechnology(item)}
@@ -153,27 +159,43 @@ export function RegisterModal({
   const TechnologyRightColumnCheckbox =
     technologiesColumns.columns[0].map(renderCheckbox);
 
-
   function handleSubmit() {
-    let error = 0
+    let error = 0;
     if (project.name === '') {
-      setProjectErrorsMessages(prevProjectErrorsMessages => ({ ...prevProjectErrorsMessages, name: 'É necessário informar um nome para o projeto.' }));
+      setProjectErrorsMessages(prevProjectErrorsMessages => ({
+        ...prevProjectErrorsMessages,
+        name: 'É necessário informar um nome para o projeto.',
+      }));
       error++;
     }
     if (project.description === '') {
-      setProjectErrorsMessages(prevProjectErrorsMessages => ({ ...prevProjectErrorsMessages, description: 'É necessário informar uma descrição para o projeto.' }));
+      setProjectErrorsMessages(prevProjectErrorsMessages => ({
+        ...prevProjectErrorsMessages,
+        description: 'É necessário informar uma descrição para o projeto.',
+      }));
       error++;
     }
     if (project.remoteRepository === '') {
-      setProjectErrorsMessages(prevProjectErrorsMessages => ({ ...prevProjectErrorsMessages, remoteRepository: 'É necessário informar um repositório remoto para o projeto.' }));
+      setProjectErrorsMessages(prevProjectErrorsMessages => ({
+        ...prevProjectErrorsMessages,
+        remoteRepository:
+          'É necessário informar um repositório remoto para o projeto.',
+      }));
       error++;
     }
     if (projectTechnologies.length === 0) {
-      setProjectErrorsMessages(prevProjectErrorsMessages => ({ ...prevProjectErrorsMessages, technologies: 'É necessário informar pelo menos uma tecnologia para o projeto.' }));
+      setProjectErrorsMessages(prevProjectErrorsMessages => ({
+        ...prevProjectErrorsMessages,
+        technologies:
+          'É necessário informar pelo menos uma tecnologia para o projeto.',
+      }));
       error++;
     }
     if (projectType === 'other') {
-      setProjectErrorsMessages(prevProjectErrorsMessages => ({ ...prevProjectErrorsMessages, type: 'É necessário informar qual é o tipo para o projeto.' }));
+      setProjectErrorsMessages(prevProjectErrorsMessages => ({
+        ...prevProjectErrorsMessages,
+        type: 'É necessário informar qual é o tipo para o projeto.',
+      }));
       error++;
     }
 
@@ -183,24 +205,23 @@ export function RegisterModal({
       return;
     }
 
-    console.log("========= Dados do projeto =========");
-    console.log("Nome: ", project.name);
-    console.log("Descrição: ", project.description);
-    console.log("Repositório remoto: ", project.remoteRepository);
-    console.log("Link de publicação: ", project.publishLink);
-    console.log("Tecnologias: ", projectTechnologies);
-    console.log("Tipo do projeto: ", projectType);
-    console.log("Imagem: ", projectImage);
-    console.log("====================================");
+    console.log('========= Dados do projeto =========');
+    console.log('Nome: ', project.name);
+    console.log('Descrição: ', project.description);
+    console.log('Repositório remoto: ', project.remoteRepository);
+    console.log('Link de publicação: ', project.publishLink);
+    console.log('Tecnologias: ', projectTechnologies);
+    console.log('Tipo do projeto: ', projectType);
+    console.log('Imagem: ', projectImage);
+    console.log('====================================');
 
-    setProject(INPUTTEXT_PROJECT_DEFAULT);
+    setProject(INPUT_TEXT_PROJECT_DEFAULT);
     setProjectImage(PROJECT_IMAGE_DEFAULT);
     setProjectType('other');
     setProjectTechnologies([]);
     error = 0;
     handleOnClose();
   }
-
 
   return (
     <Modal
@@ -216,23 +237,19 @@ export function RegisterModal({
       <View style={styles.container}>
         <ScrollView style={styles.scrollView}>
           <View style={styles.form} onStartShouldSetResponder={() => true}>
-            <View >
+            <View>
               <Text>Selecione um imagem para o projeto:</Text>
               <View style={styles.imageInputContainer}>
-                <ImagePickerButton
-                  setProjectImage={setProjectImage}
-                />
-                {
-                  projectImage.uri ? (
-                    <Image
-                      style={styles.imageProject}
-                      accessibilityLabel='Imagem do documento selecionada'
-                      source={{ uri: projectImage.uri }}
-                    />) : (
-                    <ImagePlaceHolder />
-                  )
-                }
-
+                <ImagePickerButton setProjectImage={setProjectImage} />
+                {projectImage.uri ? (
+                  <Image
+                    style={styles.imageProject}
+                    accessibilityLabel="Imagem do documento selecionada"
+                    source={{ uri: projectImage.uri }}
+                  />
+                ) : (
+                  <ImagePlaceHolder />
+                )}
               </View>
             </View>
             <Spacer vertical={24} />
@@ -272,7 +289,7 @@ export function RegisterModal({
             <Input
               value={project.remoteRepository}
               inputRef={projectRemoteRepositoryInputRef}
-              label="Link do projeto em algum repositório remoto(Github, Gitlab...)"
+              label="Link do projeto em algum repositório remoto(Github, GitLab...)"
               autoCorrect={false}
               placeholder="https://github.com/..."
               onChangeText={handleUpdateRemoteRepository}
@@ -298,46 +315,54 @@ export function RegisterModal({
             />
             <Spacer vertical={24} />
             <View>
-              <Text
-                style={styles.title}>Qual é o tipo do projeto?<Text style={styles.isRequired}>*</Text></Text>
+              <Text style={styles.title}>
+                Qual é o tipo do projeto?
+                <Text style={styles.isRequired}>*</Text>
+              </Text>
               <Spacer vertical={12} />
               <View style={styles.checkboxContainer}>
                 <View>{ProjectTypeLeftColumnCheckbox}</View>
                 <View>{ProjectTypeRightColumnCheckbox}</View>
               </View>
-              {
-                projectErrorsMessages.type !== '' && projectType === "other" && (
-                  <>
-                    <View style={styles.errorBorder} />
-                    <Text style={styles.errorMessage}>{projectErrorsMessages.type}</Text>
-                  </>
-                )
-              }
+              {projectErrorsMessages.type !== '' && projectType === 'other' && (
+                <>
+                  <View style={styles.errorBorder} />
+                  <Text style={styles.errorMessage}>
+                    {projectErrorsMessages.type}
+                  </Text>
+                </>
+              )}
             </View>
             <Spacer vertical={24} />
             <View>
-              <Text style={styles.title}>Quais tecnologias foram usadas?<Text style={styles.isRequired}>*</Text></Text>
+              <Text style={styles.title}>
+                Quais tecnologias foram usadas?
+                <Text style={styles.isRequired}>*</Text>
+              </Text>
               <Spacer vertical={12} />
               <View style={styles.checkboxContainer}>
                 <View>{TechnologyLeftColumnCheckbox}</View>
                 <View>{TechnologyRightColumnCheckbox}</View>
               </View>
-              {
-                projectErrorsMessages.technologies !== '' && projectTechnologies.length === 0 && (
+              {projectErrorsMessages.technologies !== '' &&
+                projectTechnologies.length === 0 && (
                   <>
                     <View style={styles.errorBorder} />
-                    <Text style={styles.errorMessage}>{projectErrorsMessages.technologies}</Text>
+                    <Text style={styles.errorMessage}>
+                      {projectErrorsMessages.technologies}
+                    </Text>
                   </>
-                )
-              }
+                )}
             </View>
 
             <Spacer vertical={12} />
-            <Text style={styles.textObrigatory}>Todos campos com o símbolo * são obrigatórios</Text>
+            <Text style={styles.textObligatory}>
+              Todos campos com o símbolo * são obrigatórios
+            </Text>
             <Spacer vertical={12} />
             <SubmitButton
-              title='Salvar'
-              type='primary'
+              title="Salvar"
+              type="primary"
               onPress={handleSubmit}
             />
           </View>
@@ -386,7 +411,7 @@ const styles = StyleSheet.create({
   },
   errorBorder: {
     height: 0.5,
-    width: "100%",
+    width: '100%',
     margin: 8,
     backgroundColor: THEME.COLORS.DELETE,
   },
@@ -413,7 +438,10 @@ const styles = StyleSheet.create({
     backgroundColor: THEME.COLORS.PRIMARY_TRANSLUCENT,
     borderWidth: 1,
     borderColor: THEME.COLORS.PRIMARY,
-
+  },
+  checkBoxRoundSquareBorder: {
+    borderRadius: 6,
+    borderColor: THEME.COLORS.PRIMARY,
   },
   checkBoxborderColor: {
     borderColor: THEME.COLORS.PRIMARY,
@@ -428,7 +456,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     textDecorationLine: 'none',
   },
-  textObrigatory: {
+  textObligatory: {
     color: THEME.COLORS.PRIMARY,
     fontSize: 12,
     textAlign: 'center',
