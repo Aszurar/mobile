@@ -14,6 +14,7 @@
     "postinstall": "react-native setup-ios-permissions && pod-install"
   },
   "dependencies": {
+    "pod-install": "0.1.38",
     "react": "18.1.0",
     "react-native": "0.70.6",
     "react-native-bouncy-checkbox": "^3.0.7",
@@ -21,8 +22,7 @@
     "react-native-image-picker": "^5.3.1",
     "react-native-modal": "^13.0.1",
     "react-native-permissions": "^3.8.0",
-    "react-native-svg": "^13.8.0",
-    "pod-install": "0.1.38"
+    "react-native-svg": "^13.8.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
@@ -37,6 +37,7 @@
     "@typescript-eslint/parser": "^5.37.0",
     "babel-jest": "^26.6.3",
     "eslint": "^7.32.0",
+    "eslint-plugin-import": "^2.27.5",
     "jest": "^26.6.3",
     "metro-react-native-babel-preset": "0.72.3",
     "react-native-svg-transformer": "^1.0.0",
