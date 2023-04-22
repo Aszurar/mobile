@@ -45,7 +45,7 @@ export type ProjectErrorMessagesProps = {
   remoteRepository: string;
   technologies: string;
   type: string;
-}
+};
 
 export type InputTextProjectProps = Pick<
   ProjectProps,
@@ -57,10 +57,10 @@ const PROJECT_ERROR_MESSAGES_DEFAULT = {
   description: '',
   remoteRepository: '',
   technologies: '',
-  type: '',  
-}
+  type: '',
+};
 
-const INPUTTEXT_PROJECT_DEFAULT = {
+const INPUT_TEXT_PROJECT_DEFAULT = {
   name: '',
   description: '',
   remoteRepository: '',
@@ -203,6 +203,6 @@ export {
   PROJECTS_DEFAULT,
   PROJECT_TYPES_DEFAULT,
   TECHNOLOGIES_DEFAULT,
-  INPUTTEXT_PROJECT_DEFAULT,
+  INPUT_TEXT_PROJECT_DEFAULT,
   PROJECT_ERROR_MESSAGES_DEFAULT,
 };
