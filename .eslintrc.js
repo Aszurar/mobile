@@ -25,8 +25,18 @@ module.exports = {
             ],
             pathGroups: [
               {
+                pattern: 'react',
+                group: 'external',
+                position: 'before',
+              },
+              {
+                pattern: 'native-base',
+                group: 'external',
+                position: 'before',
+              },
+              {
                 pattern:
-                  '{react*,react-*,@react*,@react-*,@react*/**,@react-*/**,styled-components/**}',
+                  '{react*,react-*,@react*,@react-*,@react*/**,@react-*/**,expo*,styled-components/**,}',
                 group: 'external',
                 position: 'before',
               },
@@ -36,23 +46,40 @@ module.exports = {
                 position: 'before',
               },
               {
-                pattern: '{@icons/**,@images/**}',
+                pattern:
+                  '{@icons/**,@images/**,assets/**,../assets/**,../../assets/**}',
                 group: 'internal',
                 position: 'before',
               },
-              {
-                pattern: '{@styles/**,@utils/**}',
-                group: 'internal',
-                position: 'before',
-              },
+
               {
                 pattern: '{@routes/**,@screens/**}',
                 group: 'internal',
                 position: 'before',
               },
               {
-                pattern: '{@atoms/**,@molecules/**,@organisms/**,./styles}',
+                pattern:
+                  '{@atoms/**,@molecules/**,@organisms/**,components/**,../components/**,../../components/**}',
                 group: 'internal',
+                position: 'before',
+              },
+              {
+                pattern:
+                  '{@styles/**,@utils/**,utils/**,../utils/**,../../utils/**}',
+                group: 'internal',
+                position: 'before',
+              },
+              {
+                pattern:
+                  '{@dtos/**,@translations/**,@dto/**,dto/**,../dto/**,../../dto/**}',
+                group: 'internal',
+                position: 'before',
+              },
+              {
+                pattern:
+                  './styles,@theme/**,theme/**,../theme/**,../../theme/**',
+                group: 'internal',
+                position: 'before',
               },
             ],
             pathGroupsExcludedImportTypes: ['internal', 'react'],
